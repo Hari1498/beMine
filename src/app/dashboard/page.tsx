@@ -14,6 +14,18 @@ interface ResponseData {
 export default function Dashboard() {
   const [responses, setResponses] = useState<ResponseData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedMedia, setSelectedMedia] = useState<{
+    type: string;
+    content: string;
+  } | null>(null);
+
+  const openLightbox = (type: string, content: string) => {
+    setSelectedMedia({ type, content });
+  };
+
+  const closeLightbox = () => {
+    setSelectedMedia(null);
+  };
 
   useEffect(() => {
     fetch("/api/response")
@@ -50,7 +62,11 @@ export default function Dashboard() {
               {res.message && <p className="message">"{res.message}"</p>}
 
               {res.media_content && (
-                <div className="media-preview">
+                <div
+                  className="media-preview"
+                  onClick={() =>
+                    openLightbox(res.media_type || "image", res.media_content!)
+                  }>
                   {res.media_type?.startsWith("image") ? (
                     <img src={res.media_content} alt="Upload" />
                   ) : res.media_type?.startsWith("video") ? (
@@ -58,10 +74,28 @@ export default function Dashboard() {
                   ) : (
                     <p>Unsupported Media</p>
                   )}
+                  <div className="overlay-hint">Click to view 🔍</div>
                 </div>
               )}
             </div>
           ))}
+        </div>
+      )}
+
+      {selectedMedia && (
+        <div className="lightbox" onClick={closeLightbox}>
+          <div
+            className="lightbox-content"
+            onClick={(e) => e.stopPropagation()}>
+            {selectedMedia.type.startsWith("image") ? (
+              <img src={selectedMedia.content} alt="Full view" />
+            ) : (
+              <video src={selectedMedia.content} controls autoPlay />
+            )}
+            <button className="close-btn" onClick={closeLightbox}>
+              ×
+            </button>
+          </div>
         </div>
       )}
 
@@ -149,6 +183,67 @@ export default function Dashboard() {
           display: block;
           max-height: 300px;
           object-fit: cover;
+        }
+
+        .media-preview {
+          position: relative;
+          cursor: pointer;
+        }
+
+        .media-preview:hover .overlay-hint {
+          opacity: 1;
+        }
+
+        .overlay-hint {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          background: rgba(0, 0, 0, 0.6);
+          color: white;
+          text-align: center;
+          padding: 0.5rem;
+          opacity: 0;
+          transition: opacity 0.2s;
+        }
+
+        .lightbox {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.9);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 1000;
+          cursor: pointer;
+        }
+
+        .lightbox-content {
+          position: relative;
+          max-width: 90vw;
+          max-height: 90vh;
+        }
+
+        .lightbox-content img,
+        .lightbox-content video {
+          max-width: 100%;
+          max-height: 90vh;
+          object-fit: contain;
+          border-radius: 8px;
+        }
+
+        .close-btn {
+          position: absolute;
+          top: -40px;
+          right: -40px;
+          background: none;
+          border: none;
+          color: white;
+          font-size: 3rem;
+          cursor: pointer;
         }
       `}</style>
     </div>
