@@ -56,13 +56,6 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="container">
-      {/* Hidden Netlify Form for static analysis */}
-      <form name="valentine-response" data-netlify="true" hidden>
-        <input type="hidden" name="form-name" value="valentine-response" />
-        <input type="text" name="accepted" />
-        <input type="text" name="timestamp" />
-      </form>
-
       <div className="content animate-float">
         <h1 className="title">Will you be my Valentine?</h1>
         <p className="subtitle">Because you mean the world to me...</p>
