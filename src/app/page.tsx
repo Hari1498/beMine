@@ -10,16 +10,50 @@ export default function Home() {
     left: "auto",
   });
   const [isMoved, setIsMoved] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [message, setMessage] = useState("");
+  const [media, setMedia] = useState<{ content: string; type: string } | null>(
+    null,
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleYesClick = async () => {
+  const handleYesClick = () => {
+    setShowModal(true);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 4 * 1024 * 1024) {
+        alert("File size too big! Please keep it under 4MB. ❤️");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setMedia({
+          content: reader.result as string,
+          type: file.type,
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const submitResponse = async () => {
+    setIsSubmitting(true);
     try {
       await fetch("/api/response", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ accepted: true }),
+        body: JSON.stringify({
+          accepted: true,
+          message,
+          media_content: media?.content,
+          media_type: media?.type,
+        }),
       });
       router.push("/success");
     } catch (error) {
@@ -51,6 +85,39 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="container">
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content animate-float">
+            <h2>Write a Message? 💌</h2>
+            <textarea
+              placeholder="Tell me something sweet..."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              className="message-input"
+            />
+
+            <div className="file-upload">
+              <label htmlFor="file-upload" className="custom-file-upload">
+                {media ? "File Selected ✅" : "Upload Photo/Video 📸"}
+              </label>
+              <input
+                id="file-upload"
+                type="file"
+                onChange={handleFileChange}
+                accept="image/*,video/*"
+              />
+            </div>
+
+            <button
+              onClick={submitResponse}
+              disabled={isSubmitting}
+              className="btn-submit">
+              {isSubmitting ? "Sending... 🚀" : "Send My Love ❤️"}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="content animate-float">
         <h1 className="title">Will you be my Valentine?</h1>
         <p className="subtitle">Because you mean the world to me...</p>
@@ -89,6 +156,68 @@ export default function Home() {
           width: 100vw;
           position: relative;
           overflow: hidden;
+        }
+
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 100;
+        }
+
+        .modal-content {
+          background: white;
+          padding: 2rem;
+          border-radius: 20px;
+          text-align: center;
+          width: 90%;
+          max-width: 400px;
+          box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .message-input {
+          width: 100%;
+          height: 100px;
+          margin: 1rem 0;
+          padding: 0.5rem;
+          border-radius: 10px;
+          border: 1px solid #ccc;
+          font-family: inherit;
+        }
+
+        .file-upload input {
+          display: none;
+        }
+
+        .custom-file-upload {
+          display: inline-block;
+          padding: 6px 12px;
+          cursor: pointer;
+          background: var(--soft-pink);
+          border-radius: 5px;
+          margin-bottom: 1rem;
+          font-weight: bold;
+          color: var(--dark-red);
+        }
+
+        .btn-submit {
+          background: var(--primary-pink);
+          color: white;
+          padding: 0.8rem 2rem;
+          border-radius: 50px;
+          font-size: 1.2rem;
+          width: 100%;
+          transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+          background: var(--dark-red);
         }
 
         .content {
