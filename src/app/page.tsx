@@ -26,8 +26,8 @@ export default function Home() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 4 * 1024 * 1024) {
-        toast.error("File size too big! Please keep it under 4MB. ❤️");
+      if (file.size > 50 * 1024 * 1024) {
+        toast.error("File size too big! Please keep it under 50MB. ❤️");
         return;
       }
       const reader = new FileReader();
