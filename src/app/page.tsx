@@ -12,24 +12,14 @@ export default function Home() {
   const [isMoved, setIsMoved] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const encode = (data: Record<string, string>) => {
-    return Object.keys(data)
-      .map(
-        (key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]),
-      )
-      .join("&");
-  };
-
   const handleYesClick = async () => {
     try {
-      await fetch("/", {
+      await fetch("/api/response", {
         method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: encode({
-          "form-name": "valentine-response",
-          accepted: "true",
-          timestamp: new Date().toISOString(),
-        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ accepted: true }),
       });
       router.push("/success");
     } catch (error) {
