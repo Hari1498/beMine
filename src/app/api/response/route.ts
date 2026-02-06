@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     fs.writeFileSync(filePath, JSON.stringify(responses, null, 2));
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { success: false, error: "Failed to save response" },
       { status: 500 },

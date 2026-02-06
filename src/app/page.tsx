@@ -14,17 +14,21 @@ export default function Home() {
 
   const handleYesClick = async () => {
     try {
-      await fetch("/api/response", {
+      // Create FormData for Netlify Forms
+      const formData = new FormData();
+      formData.append("form-name", "valentine-response");
+      formData.append("accepted", "true");
+      formData.append("timestamp", new Date().toISOString());
+
+      await fetch("/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ accepted: true }),
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams(formData as any).toString(),
       });
+
       router.push("/success");
     } catch (error) {
       console.error("Failed to send response", error);
-      // Even if it fails, proceed to success for the moment
       router.push("/success");
     }
   };
@@ -52,6 +56,13 @@ export default function Home() {
 
   return (
     <div ref={containerRef} className="container">
+      {/* Hidden Netlify Form for static analysis */}
+      <form name="valentine-response" data-netlify="true" hidden>
+        <input type="hidden" name="form-name" value="valentine-response" />
+        <input type="text" name="accepted" />
+        <input type="text" name="timestamp" />
+      </form>
+
       <div className="content animate-float">
         <h1 className="title">Will you be my Valentine?</h1>
         <p className="subtitle">Because you mean the world to me...</p>

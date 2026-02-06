@@ -4,12 +4,12 @@ import Link from "next/link";
 
 export default function PromisesPage() {
   const promises = [
-    "I promise to love you, even when you're hangry. 🍔",
-    "I promise to always listen to your stories, no matter how many times you tell them. 👂",
-    "I promise to be your biggest cheerleader in everything you do. 🎉",
-    "I promise to hold your hand through the scary parts of movies (and life). 🤝",
-    "I promise to always make your coffee just the way you like it. ☕",
-    "I promise to love you more with every passing day. ❤️",
+    "I promise to love you even when you're hungry and grumpy. 🍔😄",
+    "I promise to listen to your stories, even if I've heard them a hundred times. 👂🙂",
+    "I promise to support you in whatever you want to do, no questions asked. 💪❤️",
+    "I promise to hold your hand during scary movies and during the tough days in life. 🤝",
+    "I promise to try my best to make your coffee the way you like it (and keep trying 😅). ☕",
+    "I promise to choose you every day—today, tomorrow, and for the rest of my life. ❤️♾️",
   ];
 
   return (
