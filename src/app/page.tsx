@@ -12,20 +12,25 @@ export default function Home() {
   const [isMoved, setIsMoved] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
+  const encode = (data: Record<string, string>) => {
+    return Object.keys(data)
+      .map(
+        (key) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key]),
+      )
+      .join("&");
+  };
+
   const handleYesClick = async () => {
     try {
-      // Create FormData for Netlify Forms
-      const formData = new FormData();
-      formData.append("form-name", "valentine-response");
-      formData.append("accepted", "true");
-      formData.append("timestamp", new Date().toISOString());
-
       await fetch("/", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: new URLSearchParams(formData as any).toString(),
+        body: encode({
+          "form-name": "valentine-response",
+          accepted: "true",
+          timestamp: new Date().toISOString(),
+        }),
       });
-
       router.push("/success");
     } catch (error) {
       console.error("Failed to send response", error);
