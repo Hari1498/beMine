@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 export default function Home() {
   const router = useRouter();
@@ -26,7 +27,7 @@ export default function Home() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 4 * 1024 * 1024) {
-        alert("File size too big! Please keep it under 4MB. ❤️");
+        toast.error("File size too big! Please keep it under 4MB. ❤️");
         return;
       }
       const reader = new FileReader();
@@ -41,6 +42,13 @@ export default function Home() {
   };
 
   const submitResponse = async () => {
+    if (!media) {
+      toast.error(
+        "Please upload a cute video/photo! I really want to see you! 🥺📸",
+      );
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await fetch("/api/response", {
@@ -88,7 +96,7 @@ export default function Home() {
       {showModal && (
         <div className="modal-overlay">
           <div className="modal-content animate-float">
-            <h2>Write a Message? 💌</h2>
+            <h2>Send me a love note? 💌</h2>
             <textarea
               placeholder="Tell me something sweet..."
               value={message}
@@ -98,13 +106,16 @@ export default function Home() {
 
             <div className="file-upload">
               <label htmlFor="file-upload" className="custom-file-upload">
-                {media ? "File Selected ✅" : "Upload Photo/Video 📸"}
+                {media
+                  ? "You look amazing! 😍"
+                  : "Open Camera & Take a Shot! 📸"}
               </label>
               <input
                 id="file-upload"
                 type="file"
                 onChange={handleFileChange}
                 accept="image/*,video/*"
+                capture="user"
               />
             </div>
 
